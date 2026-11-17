@@ -1,0 +1,17 @@
+# Render Blueprint: one Docker web service. Secrets are entered in the Render dashboard
+# (sync: false), never stored here.
+services:
+  - type: web
+    name: phemelo-martin-mashome
+    runtime: docker
+    plan: free
+    region: frankfurt
+    dockerfilePath: ./Dockerfile
+    healthCheckPath: /health
+    envVars:
+      - key: ConnectionStrings__Portfolio
+        sync: false
+      - key: Admin__Email
+        sync: false
+      - key: Admin__Password
+        sync: false

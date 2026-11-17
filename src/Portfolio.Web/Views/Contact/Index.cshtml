@@ -1,0 +1,18 @@
+@model ContactFormViewModel
+@inject PortfolioContent Site
+@{
+    ViewData["Title"] = "Contact";
+}
+
+<section class="page">
+    <div class="container">
+        <h1 class="page-title">Contact</h1>
+        <div class="contact-grid">
+            <div>
+                <p class="contact-lead">@Site.Contact.Lead</p>
+                <partial name="_ContactDetails" model="Site.Contact" />
+            </div>
+            <partial name="_ContactForm" model="Model" />
+        </div>
+    </div>
+</section>

@@ -1,0 +1,36 @@
+@model PortfolioContent
+@inject IConfiguration Config
+@{
+    ViewData["Title"] = "Privacy notice";
+    ViewData["Description"] = "What this site collects, why, and how long it is kept.";
+    var retention = Config.GetValue("Privacy:MessageRetentionDays", 180);
+}
+
+<article class="page">
+    <div class="container prose">
+        <h1>Privacy notice</h1>
+        <p class="lede">This site is run by @Model.Profile.Name. It collects as little as possible and never sells or shares your information.</p>
+
+        <h2>What is collected</h2>
+        <p>If you use the contact form, the site stores your <strong>name</strong>, <strong>email address</strong> and <strong>message</strong>. Nothing else is asked for.</p>
+
+        <h2>Why</h2>
+        <p>Only so I can read your message and reply to you. It isn't used for marketing or added to any mailing list.</p>
+
+        <h2>How long it is kept</h2>
+        <p>Messages are deleted automatically after @retention days, or sooner if I delete them after replying.</p>
+
+        <h2>Cookies and tracking</h2>
+        <p>There are no analytics, advertising or tracking cookies, and no third-party scripts or fonts. The site uses:</p>
+        <ul class="bullets">
+            <li>a security cookie that protects the contact form from forged submissions;</li>
+            <li>your browser's local storage to remember whether you chose the day or night theme. This never leaves your device.</li>
+        </ul>
+
+        <h2>Security</h2>
+        <p>The site is served over HTTPS, the contact form is rate-limited and protected against forged submissions, and messages are stored in a database that only I can access, behind two-factor sign-in.</p>
+
+        <h2>Your rights</h2>
+        <p>Under the Protection of Personal Information Act (POPIA) you can ask to see, correct or delete the information you sent. Email <a href="mailto:@Model.Contact.Email">@Model.Contact.Email</a> and I'll respond as soon as I can.</p>
+    </div>
+</article>

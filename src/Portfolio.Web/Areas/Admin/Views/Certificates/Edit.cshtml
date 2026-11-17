@@ -1,0 +1,84 @@
+@model CertificateFormModel
+@{
+    var isNew = Model.Id is null;
+    ViewData["Title"] = isNew ? "Add certificate" : "Edit certificate";
+}
+<p class="back-link"><a href="/admin/certificates"><span aria-hidden="true">←</span> All certificates</a></p>
+<h1 class="page-title">@ViewData["Title"]</h1>
+
+<form method="post" asp-action="Save" enctype="multipart/form-data" class="stack-form admin-form" novalidate>
+    <partial name="_FormError" />
+    <input type="hidden" asp-for="Id">
+
+    <div class="form-grid">
+        <div class="field">
+            <label asp-for="Title"></label>
+            <input asp-for="Title" maxlength="200">
+            <span asp-validation-for="Title" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Issuer"></label>
+            <input asp-for="Issuer" maxlength="120" placeholder="e.g. The Linux Foundation">
+            <span asp-validation-for="Issuer" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Code"></label>
+            <input asp-for="Code" maxlength="20" placeholder="e.g. LFS101">
+            <span asp-validation-for="Code" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="Category"></label>
+            <input asp-for="Category" maxlength="80" placeholder="e.g. Cloud & containers">
+            <span asp-validation-for="Category" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="IssuedOn"></label>
+            <input asp-for="IssuedOn" type="date">
+            <span asp-validation-for="IssuedOn" class="field-error"></span>
+        </div>
+        <div class="field">
+            <label asp-for="CredentialId"></label>
+            <input asp-for="CredentialId" maxlength="80">
+            <span asp-validation-for="CredentialId" class="field-error"></span>
+        </div>
+        <div class="field field-wide">
+            <label asp-for="CredentialUrl"></label>
+            <input asp-for="CredentialUrl" type="url" maxlength="500" placeholder="https://">
+            <p class="field-hint">Optional. A page where employers can verify the certificate.</p>
+            <span asp-validation-for="CredentialUrl" class="field-error"></span>
+        </div>
+        <div class="field field-wide">
+            <label asp-for="File"></label>
+            @if (Model.UploadedFileName is not null)
+            {
+                <p class="field-hint">Current file: @Model.UploadedFileName. Choose a new PDF to replace it.</p>
+            }
+            else if (Model.StaticPath is not null)
+            {
+                <p class="field-hint">Using the PDF that ships with the site. Upload a PDF to replace it.</p>
+            }
+            <input asp-for="File" type="file" accept="application/pdf,.pdf">
+            <p class="field-hint">PDF only, up to 10 MB. PDFs containing scripts or embedded files are rejected.</p>
+            <span asp-validation-for="File" class="field-error"></span>
+            @if (Model.UploadedFileName is not null)
+            {
+                <label class="check"><input asp-for="RemoveFile"> Remove the uploaded PDF</label>
+            }
+        </div>
+        <div class="field">
+            <label asp-for="SortOrder"></label>
+            <input asp-for="SortOrder" type="number" min="0" max="999">
+            <p class="field-hint">Lower numbers appear first.</p>
+            <span asp-validation-for="SortOrder" class="field-error"></span>
+        </div>
+        <div class="field">
+            <span class="label">Visibility</span>
+            <label class="check"><input asp-for="IsPublished"> Show on the site</label>
+        </div>
+    </div>
+
+    <div class="action-row">
+        <button type="submit" class="btn btn-primary">@(isNew ? "Add certificate" : "Save changes")</button>
+        <a class="btn btn-secondary" href="/admin/certificates">Cancel</a>
+    </div>
+</form>

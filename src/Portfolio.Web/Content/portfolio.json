@@ -1,0 +1,270 @@
+{
+  // Public site content. Certificates and the profile photo are managed in the admin area instead.
+  "profile": {
+    "name": "Phemelo Martin Mashome",
+    "shortName": "Phemelo Mashome",
+    "kicker": "ICT graduate · Kathu, Northern Cape",
+    "lede": "I work across software development, IT support, networking and the cloud, and I keep learning in all of them. I'm completing an Advanced Diploma in ICT at Sol Plaatje University while working as an IT support Lab Intern through the AWRISE ICT Internship Programme.",
+    "metaDescription": "Phemelo Martin Mashome is an ICT graduate working across software development, IT support, networking and the cloud. Winner of the MICT SETA National Skills Challenge Hackathon 2026.",
+    "areas": [ "Software development", "IT support", "Networking & security", "Cloud & automation", "Data" ],
+    "facts": [
+      { "label": "Now", "text": "Lab Intern, IT Support at AWRISE" },
+      { "label": "Studying", "text": "Advanced Diploma in ICT (NQF 7)" },
+      { "label": "Latest win", "text": "1st place, MICT SETA Hackathon 2026", "href": "/#turtleshell" },
+      { "label": "Certified", "text": "Linux, Kubernetes, cloud native", "href": "/#certifications" }
+    ],
+    "photoAlt": "Phemelo Mashome in a graduation gown and hood, seated and smiling.",
+    "photoCaption": "Diploma in ICT graduation, 2026"
+  },
+
+  "projects": [
+    {
+      "slug": "kuruman-marketplace",
+      "title": "Kuruman MarketPlace",
+      "year": "2026",
+      "kind": "Advanced Diploma project",
+      "isLive": true,
+      "layout": "media",
+      "summary": "A marketplace that brings Kuruman's small and informal businesses online: market stalls, food sellers, tailors, salons and local couriers. It is designed for real conditions, including basic phones, limited data and three languages, and is covered by 16 integration test suites and 37 Python unit tests.",
+      "stack": [ "React", "TypeScript", "Node.js", "Express", "PostgreSQL", "Python", "scikit-learn", "Render" ],
+      "links": [
+        { "label": "Live site", "url": "https://kurumanmarketplace.co.za" },
+        { "label": "Source code", "url": "https://github.com/PhemeloMartin/Kuruman_MarketPlace" }
+      ],
+      "highlights": [
+        { "title": "SMS ordering.", "text": "Market stalls accept or decline orders from a basic phone by replying to a text." },
+        { "title": "Consistent data.", "text": "PostgreSQL row locking keeps stock and payments correct when two people buy at once." },
+        { "title": "Security.", "text": "Payments are verified server-side, staff use two-factor sign-in, and ID documents are encrypted at rest." },
+        { "title": "Machine learning.", "text": "Four scikit-learn models suggest categories, analyse reviews, flag scams and forecast sales." }
+      ],
+      "image": {
+        "src": "/img/kuruman-marketplace.jpg",
+        "alt": "Kuruman MarketPlace home page: a search box over a photo of a Kuruman street market, with options to buy or sell.",
+        "width": 1440,
+        "height": 900,
+        "browserUrl": "kurumanmarketplace.co.za"
+      },
+      "caseStudy": [
+        {
+          "heading": "The problem",
+          "paragraphs": [
+            "Most of Kuruman's small businesses have no online presence. They sell to whoever walks past, take orders in scattered WhatsApp chats and handle cash with no record. Customers can't see what's for sale without travelling to town, and there is no trusted way to pay, deliver or sort out a problem.",
+            "Many residents use basic phones or have little data, and many prefer Setswana or Afrikaans, so the solution had to work under those conditions rather than assume a modern smartphone."
+          ]
+        },
+        {
+          "heading": "What I built",
+          "paragraphs": [ "A mobile-first Progressive Web App with a separate experience for each kind of user." ],
+          "bullets": [
+            "Customers browse markets, search in English, Setswana or Afrikaans, pay cash or online with Payfast, and track their courier live on a map.",
+            "Sellers get a shop page with photos and voice notes, order management, sales KPIs and a 7-day sales forecast.",
+            "Market stalls take orders by SMS from a basic phone: reply 1 to accept, 2 if sold out, or the customer's code to hand over.",
+            "Couriers claim delivery jobs, get directions inside the app, and hand over orders with a one-time code or QR code.",
+            "Support staff work in a console behind two-factor sign-in, handling seller and courier verification, refunds and the audit log."
+          ]
+        },
+        {
+          "heading": "Architecture",
+          "paragraphs": [
+            "One Node.js and Express service on Render serves both the React app and the REST API from a single address, so the login cookie and the CSRF origin check work without cross-site cookies. Sessions live in PostgreSQL, which keeps the API stateless and ready to scale out.",
+            "Background jobs handle order expiry, an outbox for SMS and notifications, the AI worker and data retention. The machine-learning models run in a separate Python service because they need a different runtime."
+          ],
+          "bullets": [
+            "Integrations: Payfast (payments), BulkSMS (SMS), Twilio (calls), Resend (email), Cloudinary (photos) and OSRM routing on OpenStreetMap.",
+            "Hosting: Render, defined as code in a Blueprint file and deployed automatically on every push to main."
+          ]
+        },
+        {
+          "heading": "Database design",
+          "paragraphs": [ "PostgreSQL on Neon with 33 tables, chosen because the data is relational and money and stock need ACID transactions." ],
+          "bullets": [
+            "SELECT … FOR UPDATE row locks stop two customers buying the last item and stop a payment being applied twice.",
+            "The database enforces its own rules: check constraints on stock and ratings, prices stored as integer cents, and partial unique indexes such as one applied payment per order.",
+            "Order lines keep a price snapshot, so a later price change never alters a past order.",
+            "The audit log is append-only, enforced by a database trigger."
+          ]
+        },
+        {
+          "heading": "Security and privacy",
+          "bullets": [
+            "Sign-in by SMS code: 6 digits, valid for 10 minutes, stored only as a hash and rate-limited.",
+            "Server-side sessions in httpOnly, Secure, SameSite cookies; the database keeps only a SHA-256 hash of each token.",
+            "Support staff use a passphrase plus an authenticator app (TOTP) with replay protection.",
+            "ID documents and authenticator secrets are encrypted at rest with AES-256-GCM.",
+            "An order is marked paid only after Payfast's server notification passes signature, source IP, amount and merchant checks.",
+            "Personal data is deleted on a schedule in line with POPIA, and verification documents are never emailed."
+          ]
+        },
+        {
+          "heading": "Machine learning",
+          "paragraphs": [ "Four models trained with scikit-learn. They advise and people decide: nothing is blocked, hidden or priced automatically." ],
+          "bullets": [
+            "Category suggestions in three languages, which abstain when unsure.",
+            "Review analysis for sentiment and recurring themes.",
+            "Scam screening that flags attempts to move payment off the site for support staff to review.",
+            "A 7-day sales forecast per product using Poisson regression with weekday and payday effects.",
+            "Each model is loaded only if its SHA-256 hash matches its model card."
+          ]
+        },
+        {
+          "heading": "Testing",
+          "paragraphs": [ "16 automated integration suites with 204 checks cover payments, refunds, sign-in, privacy requests, SMS ordering and courier tracking. The Python AI component has 37 unit tests." ]
+        }
+      ]
+    },
+    {
+      "slug": "turtleshell",
+      "title": "TurtleShell",
+      "subtitle": "IoT smart mining safety helmet",
+      "year": "2026",
+      "kind": "Hackathon winner",
+      "tags": [ "Team of five" ],
+      "layout": "split",
+      "summary": "A connected helmet for Northern Cape miners. It tracks hazardous gas, dust and heat, shows clear instructions on the visor, and alerts rescuers with the worker's location after a fall, collapse or long inactivity.",
+      "stack": [ "IoT", "sensor fusion", "product design", "business modelling" ],
+      "highlights": [
+        { "title": "First prize, R100,000.", "text": "MICT SETA National Skills Challenge Hackathon, 28–29 August 2026, on the theme \"AI and IoT solutions for rural landscapes\"." },
+        { "title": "Multi-signal alerts.", "text": "Environmental, motion and location sensor data feed one detect, guide, protect and respond pipeline, so an alert reflects several signals instead of a single reading." },
+        { "title": "Business case.", "text": "R7,050 unit cost against a R12,000 price plus a R450 monthly maintenance subscription, with a prototype, pilot and scale roadmap." }
+      ],
+      "image": {
+        "src": "/img/hackathon-winner.jpg",
+        "alt": "Phemelo holding the R100,000 first-prize cheque at the MICT SETA National Skills Challenge Hackathon.",
+        "width": 720,
+        "height": 960,
+        "caption": "First prize, MICT SETA National Skills Challenge Hackathon, Kimberley"
+      },
+      "caseStudy": [
+        {
+          "heading": "The challenge",
+          "paragraphs": [
+            "The MICT SETA National Skills Challenge Hackathon, held at Sol Plaatje University in Kimberley on 28–29 August 2026, asked teams for AI and IoT solutions for rural landscapes.",
+            "Our five-person team focused on miners in the Northern Cape, who work around hazardous gas, dust and heat, and for whom a fall or collapse can go unnoticed."
+          ]
+        },
+        {
+          "heading": "The solution",
+          "paragraphs": [ "TurtleShell is a connected safety helmet that watches the conditions around a miner and the miner's own movement, tells them what to do, and calls for help automatically when something goes wrong." ],
+          "bullets": [
+            "Tracks hazardous gas, dust and heat around the worker.",
+            "Shows clear instructions on the visor.",
+            "Automatically alerts rescuers with the worker's location after a fall, collapse or prolonged inactivity."
+          ]
+        },
+        {
+          "heading": "How it works",
+          "paragraphs": [ "Environmental, motion and location sensor data are combined in one detect, guide, protect and respond pipeline, so an alert reflects several signals rather than a single reading." ]
+        },
+        {
+          "heading": "Business case",
+          "bullets": [
+            "Unit cost of R7,050 against a R12,000 selling price, about a 41% hardware margin.",
+            "A R450 monthly maintenance subscription per helmet, about an 82% margin.",
+            "A roadmap from prototype to pilot to scale."
+          ]
+        },
+        {
+          "heading": "My role",
+          "paragraphs": [ "I co-designed the helmet and its alert pipeline with the team, and co-developed the business case." ]
+        },
+        {
+          "heading": "Result and next steps",
+          "paragraphs": [ "TurtleShell won first prize and R100,000. The roadmap adds machine learning to predict hazards before they become dangerous." ]
+        }
+      ]
+    },
+    {
+      "slug": "bbt-construction",
+      "title": "BBT Construction Management System",
+      "year": "2025",
+      "kind": "Final-year project",
+      "layout": "row",
+      "summary": "A full-stack system for project, resource and financial management at BBT Construction, with automated expense tracking and role-based access control.",
+      "stack": [ "Django", "Django Ninja", "Next.js", "React", "SWR", "REST APIs" ],
+      "caseStudy": [
+        {
+          "heading": "Overview",
+          "paragraphs": [ "My Diploma in ICT final-year project, which earned a distinction: a full-stack system that brings BBT Construction's project, resource and financial management into one place." ]
+        },
+        {
+          "heading": "What I built",
+          "bullets": [
+            "A Django backend exposing RESTful APIs with Django Ninja, with separate routers for each area of the business.",
+            "A Next.js (React) frontend using SWR for data fetching and real-time synchronisation.",
+            "JWT authentication and role-based access control for project and resource management.",
+            "Automated expense tracking."
+          ]
+        },
+        {
+          "heading": "What it covers",
+          "bullets": [
+            "Projects, budgets and spending per site manager.",
+            "Daily and monthly site reports.",
+            "Diesel requests, maintenance requests and fault logging.",
+            "Finance and creditors, vehicles, a site photo gallery and user accounts."
+          ]
+        }
+      ]
+    }
+  ],
+
+  "experience": [
+    {
+      "period": "Aug 2026 – now",
+      "role": "Lab Intern, IT Support",
+      "organisation": "AWRISE ICT Internship Programme · Sol Plaatje University, Kimberley",
+      "summary": "A 12-month graduate ICT internship supporting the university's computer labs, students and lecturers.",
+      "bullets": [
+        "Install, configure and update operating systems, applications and development software on lab workstations.",
+        "Diagnose and repair hardware and software faults on desktop PCs and peripherals, replacing faulty components.",
+        "Join workstations to the university's Active Directory domain and resolve account, login and permission issues.",
+        "Troubleshoot network connectivity, including IP configuration and LAN access.",
+        "Give first-line support during lab sessions and prepare labs for tests and exams."
+      ]
+    }
+  ],
+
+  "skills": [
+    { "name": "Languages", "items": [ "Python", "C#", "Java", "JavaScript", "SQL", "HTML and CSS" ] },
+    { "name": "Frameworks", "items": [ "ASP.NET", "Django and Django Ninja", "React and Next.js", "SWR", "Bootstrap" ] },
+    { "name": "Databases", "items": [ "PostgreSQL", "MySQL", "SQLite", "Database design" ] },
+    { "name": "Software engineering", "items": [ "Software design and systems analysis", "RESTful APIs", "Twilio API", "Mobile app development", "UI/UX design in Figma", "Project management" ] },
+    { "name": "IT support and systems", "items": [ "PC hardware repair", "Software installation and configuration", "Active Directory and Windows domains", "Operating systems and servers", "End-user support" ] },
+    { "name": "Networking and security", "items": [ "TCP/IP and LANs", "Network troubleshooting", "Information security principles" ] },
+    { "name": "Cloud and DevOps", "items": [ "Linux", "Kubernetes", "Containers and cloud native", "Git and GitHub", "Automation and scripting" ] },
+    { "name": "Data", "items": [ "Data analysis and visualisation", "Big data foundations" ] }
+  ],
+
+  "education": [
+    {
+      "period": "2026",
+      "title": "Advanced Diploma in ICT (NQF 7)",
+      "institution": "Sol Plaatje University, Kimberley · completing December 2026",
+      "description": "Software Engineering and Design, Advanced Development Systems, Information Security, Database Systems, Development Software, Advanced Data Analysis and Visualisation, and an ICT Project."
+    },
+    {
+      "period": "2023 – 2025",
+      "title": "Diploma in ICT in Applications Development (NQF 6)",
+      "institution": "Sol Plaatje University, Kimberley · conferred April 2026",
+      "description": "Distinctions in Applications Development Foundations, Web Development, Technopreneurship and the Final-Year Project. Modules included Programming I to III, Software Engineering, Mobile Application Development, Communication Networks, Operating Systems and Server Management, Big Data Foundations and Human Computer Interaction."
+    },
+    { "period": "2021", "title": "National Senior Certificate" }
+  ],
+
+  "awards": [
+    { "year": "2026", "emphasis": "Winner", "text": "MICT SETA National Skills Challenge Hackathon, Northern Cape" },
+    { "year": "2024", "text": "Participant, Telkom LearnHackathon" },
+    { "year": "2024", "text": "Participant, Northern Cape Innovation Forum" }
+  ],
+
+  "contact": {
+    "lead": "I'm open to roles in software development, IT support, systems and network administration, cloud and data.",
+    "email": "03martinp@gmail.com",
+    "linkedInUrl": "https://www.linkedin.com/in/phemelo-martin-mashome-7a1b5a324/",
+    "linkedInLabel": "phemelo-martin-mashome",
+    "gitHubUrl": "https://github.com/PhemeloMartin",
+    "gitHubLabel": "PhemeloMartin"
+  },
+
+  "community": [ "Junior Station Commander, Kathu", "Youth development programmes" ]
+}

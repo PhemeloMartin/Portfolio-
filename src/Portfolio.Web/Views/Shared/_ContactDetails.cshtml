@@ -1,0 +1,6 @@
+@model ContactDetails
+<dl class="contact-list">
+    <div><dt>Email</dt><dd><a href="mailto:@Model.Email">@Model.Email</a></dd></div>
+    <div><dt>LinkedIn</dt><dd><a href="@Model.LinkedInUrl" target="_blank" rel="noopener">@Model.LinkedInLabel<span class="sr-only"> (opens in a new tab)</span></a></dd></div>
+    <div><dt>GitHub</dt><dd><a href="@Model.GitHubUrl" target="_blank" rel="noopener">@Model.GitHubLabel<span class="sr-only"> (opens in a new tab)</span></a></dd></div>
+</dl>

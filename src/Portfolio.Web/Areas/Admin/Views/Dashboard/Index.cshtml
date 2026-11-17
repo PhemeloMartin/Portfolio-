@@ -1,0 +1,26 @@
+@model DashboardModel
+@{
+    ViewData["Title"] = "Dashboard";
+}
+<h1 class="page-title">Dashboard</h1>
+
+<ul class="stat-grid">
+    <li class="stat-card">
+        <p class="stat-label">Unread messages</p>
+        <p class="stat-value">@Model.UnreadMessages</p>
+        <p class="muted">@Model.TotalMessages in total · deleted after @Model.RetentionDays days</p>
+        <a href="/admin/messages">Open messages <span aria-hidden="true">→</span></a>
+    </li>
+    <li class="stat-card">
+        <p class="stat-label">Certificates</p>
+        <p class="stat-value">@Model.PublishedCertificates</p>
+        <p class="muted">shown on the site, @Model.Certificates in total</p>
+        <a href="/admin/certificates">Manage certificates <span aria-hidden="true">→</span></a>
+    </li>
+    <li class="stat-card">
+        <p class="stat-label">Profile photo</p>
+        <p class="stat-value stat-value-text">@(Model.HasCustomPhoto ? "Uploaded" : "Default")</p>
+        <p class="muted">@(Model.HasCustomPhoto ? "Your uploaded photo is live" : "Using the original graduation photo")</p>
+        <a href="/admin/photo">Change photo <span aria-hidden="true">→</span></a>
+    </li>
+</ul>

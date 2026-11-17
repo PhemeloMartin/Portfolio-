@@ -1,0 +1,20 @@
+@model RecoveryCodeModel
+@{
+    ViewData["Title"] = "Recovery code";
+}
+<div class="auth-card">
+    <h1>Use a recovery code</h1>
+    <p class="muted">Enter one of the recovery codes you saved when you set up two-factor sign-in. Each code works once.</p>
+
+    <form method="post" asp-action="LoginWithRecoveryCode" asp-route-returnUrl="@Model.ReturnUrl" class="stack-form" novalidate>
+        <partial name="_FormError" />
+        <div class="field">
+            <label asp-for="Code">Recovery code</label>
+            <input asp-for="Code" autocomplete="off" autofocus class="code-input">
+            <span asp-validation-for="Code" class="field-error"></span>
+        </div>
+        <button type="submit" class="btn btn-primary">Sign in</button>
+    </form>
+
+    <p class="auth-footnote"><a asp-action="LoginWith2fa" asp-route-returnUrl="@Model.ReturnUrl">Back to authenticator code</a></p>
+</div>

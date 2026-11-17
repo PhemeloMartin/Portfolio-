@@ -1,0 +1,18 @@
+@model string[]
+@{
+    ViewData["Title"] = "Save your recovery codes";
+}
+<div class="auth-card auth-card-wide">
+    <div class="form-status is-success" role="status">Two-factor sign-in is on.</div>
+    <h1>Save your recovery codes</h1>
+    <p>If you lose your phone, each of these codes lets you sign in once. <strong>This is the only time they'll be shown.</strong> Store them somewhere safe, such as a password manager.</p>
+
+    <ul class="recovery-codes">
+        @foreach (var code in Model)
+        {
+            <li><code>@code</code></li>
+        }
+    </ul>
+
+    <p><a class="btn btn-primary" asp-action="Login">I've saved them, sign in again</a></p>
+</div>

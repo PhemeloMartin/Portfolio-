@@ -1,0 +1,13 @@
+@inject PortfolioContent Site
+@{
+    ViewData["Title"] = "Too many attempts";
+}
+
+<section class="page error-page">
+    <div class="container prose">
+        <p class="meta">Error 429</p>
+        <h1>Too many attempts</h1>
+        <p class="lede">To protect the site from spam, there's a limit on how often a form can be sent. Please wait 15 minutes and try again, or email me directly at <a href="mailto:@Site.Contact.Email">@Site.Contact.Email</a>.</p>
+        <p class="error-actions"><a class="btn btn-primary" href="/">Go to the home page</a></p>
+    </div>
+</section>

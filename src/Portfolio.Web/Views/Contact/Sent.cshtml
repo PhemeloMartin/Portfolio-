@@ -1,0 +1,14 @@
+@model PortfolioContent
+@{
+    ViewData["Title"] = "Message sent";
+}
+
+<section class="page">
+    <div class="container prose">
+        <div class="notice notice-success" role="status">
+            <h1>Thanks, your message has been sent.</h1>
+            <p>I usually reply within two working days. If it's urgent, you can also email me at <a href="mailto:@Model.Contact.Email">@Model.Contact.Email</a>.</p>
+        </div>
+        <p><a class="btn btn-secondary" href="/">Back to the home page</a></p>
+    </div>
+</section>

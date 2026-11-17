@@ -1,0 +1,27 @@
+@model Project
+@{
+    var hasCaseStudy = Model.CaseStudy.Count > 0 && ViewData["HideCaseStudyLink"] is not true;
+}
+@if (Model.Links.Count > 0 || hasCaseStudy)
+{
+    <ul class="link-row">
+        @foreach (var link in Model.Links)
+        {
+            var external = link.Url.StartsWith("https://", StringComparison.OrdinalIgnoreCase);
+            <li>
+                <a href="@link.Url" target="@(external ? "_blank" : null)" rel="@(external ? "noopener" : null)">
+                    @link.Label
+                    @if (external)
+                    {
+                        <span class="sr-only">(opens in a new tab)</span>
+                        <span aria-hidden="true">↗</span>
+                    }
+                </a>
+            </li>
+        }
+        @if (hasCaseStudy)
+        {
+            <li><a href="/projects/@Model.Slug">Read the case study <span aria-hidden="true">→</span></a></li>
+        }
+    </ul>
+}

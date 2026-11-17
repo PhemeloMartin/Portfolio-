@@ -1,0 +1,46 @@
+@model MessageListModel
+@{
+    ViewData["Title"] = "Messages";
+}
+<h1 class="page-title">Messages</h1>
+<p class="muted">Messages are deleted automatically after @Model.RetentionDays days (POPIA).</p>
+
+@if (Model.Messages.Count == 0)
+{
+    <div class="empty-state">
+        <p>No messages yet. When someone uses the contact form, their message appears here.</p>
+    </div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr><th scope="col">From</th><th scope="col">Message</th><th scope="col">Received</th></tr>
+            </thead>
+            <tbody>
+                @foreach (var m in Model.Messages)
+                {
+                    <tr class="@(m.IsRead ? null : "is-unread")">
+                        <td>
+                            <a href="/admin/messages/@m.Id">@m.Name</a>
+                            @if (!m.IsRead) { <span class="badge">New</span> }
+                            <div class="muted small">@m.Email</div>
+                        </td>
+                        <td>@m.Body.Preview()</td>
+                        <td class="nowrap">@m.CreatedAtUtc.ToSast()</td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+
+    @if (Model.TotalPages > 1)
+    {
+        <nav class="pager" aria-label="Pages">
+            @if (Model.Page > 1) { <a href="/admin/messages?page=@(Model.Page - 1)">← Newer</a> }
+            <span class="muted">Page @Model.Page of @Model.TotalPages</span>
+            @if (Model.Page < Model.TotalPages) { <a href="/admin/messages?page=@(Model.Page + 1)">Older →</a> }
+        </nav>
+    }
+}

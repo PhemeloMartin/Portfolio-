@@ -1,0 +1,300 @@
+@model HomeViewModel
+@{
+    var c = Model.Content;
+    var featured = c.Projects.Where(p => p.Layout != "row").ToList();
+    var rows = c.Projects.Where(p => p.Layout == "row").ToList();
+}
+
+<!-- Intro -->
+<section class="hero" aria-labelledby="name">
+    <div class="container hero-grid">
+        <div class="hero-text">
+            <p class="kicker">@c.Profile.Kicker</p>
+            <h1 id="name">@c.Profile.Name</h1>
+            <p class="hero-lede">@c.Profile.Lede</p>
+            @if (c.Profile.Areas.Count > 0)
+            {
+                <ul class="areas" aria-label="Areas I work in">
+                    @foreach (var area in c.Profile.Areas)
+                    {
+                        <li>@area</li>
+                    }
+                </ul>
+            }
+            <div class="hero-actions">
+                <a class="btn btn-primary" href="#work">View my work</a>
+                <a class="btn btn-secondary" href="#contact">Get in touch</a>
+            </div>
+        </div>
+
+        <figure class="hero-photo">
+            <img src="/media/profile-photo" width="800" height="1000" alt="@c.Profile.PhotoAlt" fetchpriority="high">
+            @if (c.Profile.PhotoCaption is not null)
+            {
+                <figcaption>@c.Profile.PhotoCaption</figcaption>
+            }
+        </figure>
+    </div>
+
+    @if (c.Profile.Facts.Count > 0)
+    {
+        <div class="container">
+            <dl class="facts">
+                @foreach (var fact in c.Profile.Facts)
+                {
+                    <div>
+                        <dt>@fact.Label</dt>
+                        <dd>@if (fact.Href is not null) { <a href="@fact.Href">@fact.Text</a> } else { @fact.Text }</dd>
+                    </div>
+                }
+            </dl>
+        </div>
+    }
+</section>
+
+<!-- Work -->
+<section class="section" id="work" aria-labelledby="work-title">
+    <div class="container">
+        <h2 class="section-title" id="work-title">Selected work</h2>
+
+        @foreach (var p in featured)
+        {
+            var caseStudyUrl = p.CaseStudy.Count > 0 ? $"/projects/{p.Slug}" : null;
+
+            if (p.Layout == "media")
+            {
+                <article class="featured featured-media" id="@p.Slug">
+                    @{ var live = p.Links.FirstOrDefault(); }
+                    <a class="browser" href="@(live?.Url ?? caseStudyUrl)" target="@(live is null ? null : "_blank")" rel="@(live is null ? null : "noopener")"
+                       aria-label="@(live is null ? $"{p.Title} case study" : $"{p.Title} {live.Label.ToLowerInvariant()} (opens in a new tab)")">
+                        <div class="browser-bar" aria-hidden="true">
+                            <svg width="12" height="12" viewBox="0 0 24 24"><rect x="5" y="10" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="2"/></svg>
+                            @p.Image!.BrowserUrl
+                        </div>
+                        <img src="@p.Image.Src" width="@p.Image.Width" height="@p.Image.Height" alt="@p.Image.Alt" loading="lazy">
+                    </a>
+
+                    <div class="featured-intro">
+                        <p class="meta">@p.Meta @if (p.IsLive) { <text>· <span class="live">Live</span></text> }</p>
+                        <h3>@p.Title</h3>
+                        <p>@p.Summary</p>
+                        <p class="stack">@string.Join(", ", p.Stack)</p>
+                        <partial name="_ProjectLinks" model="p" />
+                    </div>
+
+                    @if (p.Highlights.Count > 0)
+                    {
+                        <ul class="highlights highlights-grid">
+                            @foreach (var h in p.Highlights)
+                            {
+                                <li><strong>@h.Title</strong> @h.Text</li>
+                            }
+                        </ul>
+                    }
+                </article>
+            }
+            else
+            {
+                <article class="featured featured-split" id="@p.Slug">
+                    <figure class="split-photo">
+                        <img src="@p.Image!.Src" width="@p.Image.Width" height="@p.Image.Height" alt="@p.Image.Alt" loading="lazy">
+                        @if (p.Image.Caption is not null)
+                        {
+                            <figcaption>@p.Image.Caption</figcaption>
+                        }
+                    </figure>
+
+                    <div>
+                        <p class="meta">@p.Meta</p>
+                        <h3>@p.Title</h3>
+                        @if (p.Subtitle is not null)
+                        {
+                            <p class="subtitle">@p.Subtitle</p>
+                        }
+                        <p>@p.Summary</p>
+                        @if (p.Highlights.Count > 0)
+                        {
+                            <ul class="highlights">
+                                @foreach (var h in p.Highlights)
+                                {
+                                    <li><strong>@h.Title</strong> @h.Text</li>
+                                }
+                            </ul>
+                        }
+                        <p class="stack">@string.Join(", ", p.Stack)</p>
+                        <partial name="_ProjectLinks" model="p" />
+                    </div>
+                </article>
+            }
+        }
+
+        @if (rows.Count > 0)
+        {
+            <ul class="project-list">
+                @foreach (var p in rows)
+                {
+                    var href = p.CaseStudy.Count > 0 ? $"/projects/{p.Slug}" : p.Links.FirstOrDefault()?.Url;
+                    <li>
+                        <a class="project-row" href="@href">
+                            <span class="project-meta"><span>@p.Year</span><span>@p.Kind</span></span>
+                            <span class="project-main">
+                                <span class="project-title">@p.Title</span>
+                                <span class="project-desc">@p.Summary</span>
+                                <span class="project-tags">@string.Join(", ", p.Stack)</span>
+                            </span>
+                            <span class="project-arrow" aria-hidden="true">→</span>
+                        </a>
+                    </li>
+                }
+            </ul>
+        }
+    </div>
+</section>
+
+<!-- Experience -->
+<section class="section" id="experience" aria-labelledby="experience-title">
+    <div class="container">
+        <h2 class="section-title" id="experience-title">Experience</h2>
+        <ol class="timeline">
+            @foreach (var e in c.Experience)
+            {
+                <li>
+                    <p class="tl-when">@e.Period</p>
+                    <div>
+                        <h3>@e.Role</h3>
+                        <p class="tl-where">@e.Organisation</p>
+                        @if (e.Summary is not null)
+                        {
+                            <p>@e.Summary</p>
+                        }
+                        @if (e.Bullets.Count > 0)
+                        {
+                            <ul class="bullets">
+                                @foreach (var b in e.Bullets)
+                                {
+                                    <li>@b</li>
+                                }
+                            </ul>
+                        }
+                    </div>
+                </li>
+            }
+        </ol>
+    </div>
+</section>
+
+<!-- Skills -->
+<section class="section" id="skills" aria-labelledby="skills-title">
+    <div class="container">
+        <h2 class="section-title" id="skills-title">Skills</h2>
+        <div class="skills">
+            @foreach (var group in c.Skills)
+            {
+                <div>
+                    <h3>@group.Name</h3>
+                    <ul>
+                        @foreach (var item in group.Items)
+                        {
+                            <li>@item</li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Certifications -->
+@if (Model.Certificates.Count > 0)
+{
+    <section class="section" id="certifications" aria-labelledby="certifications-title">
+        <div class="container">
+            <h2 class="section-title" id="certifications-title">Certifications</h2>
+            <ul class="cert-grid">
+                @foreach (var cert in Model.Certificates)
+                {
+                    <li class="cert">
+                        <p class="cert-issuer">
+                            @cert.Issuer
+                            @if (cert.Category is not null)
+                            {
+                                <br>@cert.Category
+                            }
+                        </p>
+                        @if (cert.Code is not null)
+                        {
+                            <p class="cert-code">@cert.Code</p>
+                        }
+                        <h3>@cert.Title</h3>
+                        <p class="cert-meta">
+                            @cert.IssuedOn.ToString("MMMM yyyy")
+                            @if (cert.CredentialId is not null) { <br><text>ID @cert.CredentialId</text> }
+                        </p>
+                        @if (cert.Url is not null)
+                        {
+                            <a href="@cert.Url" target="_blank" rel="noopener">View certificate<span class="sr-only"> (opens in a new tab)</span> <span aria-hidden="true">↗</span></a>
+                        }
+                    </li>
+                }
+            </ul>
+        </div>
+    </section>
+}
+
+<!-- Education -->
+<section class="section" id="education" aria-labelledby="education-title">
+    <div class="container">
+        <h2 class="section-title" id="education-title">Education and awards</h2>
+        <div class="edu-grid">
+            <ol class="timeline">
+                @foreach (var ed in c.Education)
+                {
+                    <li>
+                        <p class="tl-when">@ed.Period</p>
+                        <div>
+                            <h3>@ed.Title</h3>
+                            @if (ed.Institution is not null)
+                            {
+                                <p class="tl-where">@ed.Institution</p>
+                            }
+                            @if (ed.Description is not null)
+                            {
+                                <p>@ed.Description</p>
+                            }
+                        </div>
+                    </li>
+                }
+            </ol>
+
+            @if (c.Awards.Count > 0)
+            {
+                <div class="awards">
+                    <h3>Awards and events</h3>
+                    <ul>
+                        @foreach (var a in c.Awards)
+                        {
+                            <li>
+                                <span class="aw-year">@a.Year</span>
+                                <span>@if (a.Emphasis is not null) { <strong>@a.Emphasis</strong><text>, </text> }@a.Text</span>
+                            </li>
+                        }
+                    </ul>
+                </div>
+            }
+        </div>
+    </div>
+</section>
+
+<!-- Contact -->
+<section class="section" id="contact" aria-labelledby="contact-title">
+    <div class="container">
+        <h2 class="section-title" id="contact-title">Contact</h2>
+        <div class="contact-grid">
+            <div>
+                <p class="contact-lead">@c.Contact.Lead</p>
+                <partial name="_ContactDetails" model="c.Contact" />
+            </div>
+            <partial name="_ContactForm" model="Model.ContactForm" />
+        </div>
+    </div>
+</section>

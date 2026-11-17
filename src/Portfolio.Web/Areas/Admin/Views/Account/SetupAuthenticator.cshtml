@@ -1,0 +1,35 @@
+@model SetupAuthenticatorModel
+@{
+    ViewData["Title"] = "Set up two-factor sign-in";
+}
+<div class="auth-card auth-card-wide">
+    <h1>Set up two-factor sign-in</h1>
+    <p class="muted">The admin area needs a code from your phone as well as your password. This takes about a minute and only happens once.</p>
+
+    <ol class="setup-steps">
+        <li>
+            <h2>Install an authenticator app</h2>
+            <p>Microsoft Authenticator, Google Authenticator or any app that supports time-based codes.</p>
+        </li>
+        <li>
+            <h2>Scan this QR code</h2>
+            <div class="qr-row">
+                <img src="@Model.QrCodeDataUri" width="180" height="180" alt="QR code to add this site to your authenticator app">
+                <p>Can't scan it? Choose "enter a setup key" in the app and type:<br>
+                    <code class="setup-key">@Model.SharedKey</code></p>
+            </div>
+        </li>
+        <li>
+            <h2>Enter the 6-digit code the app shows</h2>
+            <form method="post" asp-action="SetupAuthenticator" class="stack-form" novalidate>
+                <partial name="_FormError" />
+                <div class="field">
+                    <label asp-for="Code">Code</label>
+                    <input asp-for="Code" inputmode="numeric" autocomplete="one-time-code" maxlength="7" class="code-input">
+                    <span asp-validation-for="Code" class="field-error"></span>
+                </div>
+                <button type="submit" class="btn btn-primary">Turn on two-factor sign-in</button>
+            </form>
+        </li>
+    </ol>
+</div>

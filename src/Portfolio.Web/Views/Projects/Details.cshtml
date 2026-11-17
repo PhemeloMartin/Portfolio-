@@ -1,0 +1,90 @@
+@model ProjectViewModel
+@{
+    var p = Model.Project;
+    ViewData["Title"] = p.Title;
+    ViewData["Description"] = p.Summary;
+    ViewData["HideCaseStudyLink"] = true;
+}
+
+<article class="case">
+    <header class="case-head">
+        <div class="container">
+            <p class="back-link"><a href="/#@p.Slug"><span aria-hidden="true">←</span> All work</a></p>
+            <p class="meta">@p.Meta @if (p.IsLive) { <text>· <span class="live">Live</span></text> }</p>
+            <h1>@p.Title</h1>
+            @if (p.Subtitle is not null)
+            {
+                <p class="subtitle">@p.Subtitle</p>
+            }
+            <p class="case-lede">@p.Summary</p>
+            <p class="stack">@string.Join(", ", p.Stack)</p>
+            <partial name="_ProjectLinks" model="p" view-data="ViewData" />
+        </div>
+    </header>
+
+    @if (p.Image is not null)
+    {
+        <div class="container">
+            @if (p.Layout == "media")
+            {
+                <figure class="case-figure browser">
+                    <div class="browser-bar" aria-hidden="true">@p.Image.BrowserUrl</div>
+                    <img src="@p.Image.Src" width="@p.Image.Width" height="@p.Image.Height" alt="@p.Image.Alt">
+                </figure>
+            }
+            else
+            {
+                <figure class="case-figure case-photo">
+                    <img src="@p.Image.Src" width="@p.Image.Width" height="@p.Image.Height" alt="@p.Image.Alt">
+                    @if (p.Image.Caption is not null)
+                    {
+                        <figcaption>@p.Image.Caption</figcaption>
+                    }
+                </figure>
+            }
+        </div>
+    }
+
+    <div class="container case-body">
+        @foreach (var part in p.CaseStudy)
+        {
+            <section>
+                <h2>@part.Heading</h2>
+                @foreach (var para in part.Paragraphs)
+                {
+                    <p>@para</p>
+                }
+                @if (part.Bullets.Count > 0)
+                {
+                    <ul class="bullets">
+                        @foreach (var b in part.Bullets)
+                        {
+                            <li>@b</li>
+                        }
+                    </ul>
+                }
+            </section>
+        }
+    </div>
+
+    <nav class="container case-nav" aria-label="More projects">
+        @if (Model.Previous is not null)
+        {
+            <a class="case-nav-link" href="/projects/@Model.Previous.Slug">
+                <span class="meta">Previous</span>
+                <span>@Model.Previous.Title</span>
+            </a>
+        }
+        else
+        {
+            <span></span>
+        }
+        @if (Model.Next is not null)
+        {
+            <a class="case-nav-link case-nav-next" href="/projects/@Model.Next.Slug">
+                <span class="meta">Next</span>
+                <span>@Model.Next.Title</span>
+            </a>
+        }
+    </nav>
+</article>

@@ -1,0 +1,7 @@
+@{
+    var error = ViewData.ModelState[string.Empty]?.Errors.FirstOrDefault()?.ErrorMessage;
+}
+@if (error is not null)
+{
+    <div class="form-status is-error" role="alert">@error</div>
+}

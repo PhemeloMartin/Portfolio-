@@ -1,0 +1,61 @@
+@model ContactFormViewModel
+@{
+    string? Err(string key) => ViewData.ModelState[key]?.Errors.FirstOrDefault()?.ErrorMessage;
+    var nameErr = Err(nameof(ContactFormModel.Name));
+    var emailErr = Err(nameof(ContactFormModel.Email));
+    var messageErr = Err(nameof(ContactFormModel.Message));
+    var hasFieldErrors = nameErr is not null || emailErr is not null || messageErr is not null;
+}
+@if (!Model.IsAvailable)
+{
+    <div class="form-status is-error" role="status">
+        The contact form is unavailable right now. Please email me at
+        <a href="mailto:@Model.Email">@Model.Email</a>.
+    </div>
+}
+else
+{
+    <form class="contact-form" method="post" action="/contact" novalidate asp-antiforgery="false" data-contact-form>
+        <input type="hidden" name="@Model.TokenFieldName" value="@Model.Token">
+
+        @if (Model.FormError is not null)
+        {
+            <div class="form-status is-error" role="alert">@Model.FormError</div>
+        }
+        else if (hasFieldErrors)
+        {
+            <div class="form-status is-error" role="alert">Please fix the highlighted fields.</div>
+        }
+        <div class="form-status" role="status" aria-live="polite" hidden data-form-status></div>
+
+        <div class="field">
+            <label for="cf-name">Name</label>
+            <input id="cf-name" name="Name" type="text" autocomplete="name" maxlength="100" required
+                   value="@Model.Form.Name" aria-describedby="cf-name-err" aria-invalid="@(nameErr is null ? "false" : "true")">
+            <p class="field-error" id="cf-name-err" hidden="@(nameErr is null)">@nameErr</p>
+        </div>
+
+        <div class="field">
+            <label for="cf-email">Email</label>
+            <input id="cf-email" name="Email" type="email" autocomplete="email" maxlength="254" required
+                   value="@Model.Form.Email" aria-describedby="cf-email-err" aria-invalid="@(emailErr is null ? "false" : "true")">
+            <p class="field-error" id="cf-email-err" hidden="@(emailErr is null)">@emailErr</p>
+        </div>
+
+        <div class="field">
+            <label for="cf-message">Message</label>
+            <textarea id="cf-message" name="Message" rows="6" maxlength="2000" required
+                      aria-describedby="cf-message-hint cf-message-err" aria-invalid="@(messageErr is null ? "false" : "true")">@Model.Form.Message</textarea>
+            <p class="field-hint" id="cf-message-hint">Up to 2,000 characters.</p>
+            <p class="field-error" id="cf-message-err" hidden="@(messageErr is null)">@messageErr</p>
+        </div>
+
+        <div class="hp" aria-hidden="true">
+            <label for="cf-website">Leave this field empty</label>
+            <input id="cf-website" name="Website" type="text" tabindex="-1" autocomplete="off">
+        </div>
+
+        <button class="btn btn-primary" type="submit">Send message</button>
+        <p class="form-note">I only use your details to reply to you. <a href="/privacy">Privacy notice</a></p>
+    </form>
+}

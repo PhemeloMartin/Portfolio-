@@ -1,0 +1,44 @@
+@model List<Certificate>
+@{
+    ViewData["Title"] = "Certificates";
+}
+<div class="title-row">
+    <h1 class="page-title">Certificates</h1>
+    <a class="btn btn-primary" href="/admin/certificates/new">Add certificate</a>
+</div>
+
+@if (Model.Count == 0)
+{
+    <div class="empty-state"><p>No certificates yet. Add one and it appears in the Certifications section of the site.</p></div>
+}
+else
+{
+    <div class="table-wrap">
+        <table class="data-table">
+            <thead>
+                <tr><th scope="col">Certificate</th><th scope="col">Issued</th><th scope="col">File</th><th scope="col">On site</th><th scope="col"><span class="sr-only">Actions</span></th></tr>
+            </thead>
+            <tbody>
+                @foreach (var c in Model)
+                {
+                    var file = c.FileName is not null ? "Uploaded PDF" : c.StaticPath is not null ? "Built-in PDF" : "Link only";
+                    <tr>
+                        <td>
+                            <a href="/admin/certificates/@c.Id">@c.Title</a>
+                            <div class="muted small">@(c.Code is null ? "" : c.Code + " · ")@c.Issuer</div>
+                        </td>
+                        <td class="nowrap">@c.IssuedOn.ToString("MMM yyyy")</td>
+                        <td>@file</td>
+                        <td>@(c.IsPublished ? "Yes" : "Hidden")</td>
+                        <td class="nowrap actions">
+                            <a href="/admin/certificates/@c.Id">Edit</a>
+                            <form method="post" asp-action="Delete" asp-route-id="@c.Id" class="inline-form" data-confirm="Delete “@c.Title”? This can't be undone.">
+                                <button type="submit" class="link-button danger">Delete</button>
+                            </form>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}

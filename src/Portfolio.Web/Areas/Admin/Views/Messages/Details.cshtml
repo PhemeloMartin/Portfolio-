@@ -1,0 +1,20 @@
+@model ContactMessage
+@{
+    ViewData["Title"] = $"Message from {Model.Name}";
+    var replyLink = $"mailto:{Uri.EscapeDataString(Model.Email)}?subject={Uri.EscapeDataString("Re: your message via my portfolio")}";
+}
+<p class="back-link"><a href="/admin/messages"><span aria-hidden="true">←</span> All messages</a></p>
+
+<article class="message">
+    <header>
+        <h1>@Model.Name</h1>
+        <p class="muted"><a href="mailto:@Model.Email">@Model.Email</a> · @Model.CreatedAtUtc.ToSast() SAST</p>
+    </header>
+    <div class="message-body">@Model.Body</div>
+    <div class="action-row">
+        <a class="btn btn-primary" href="@replyLink">Reply by email</a>
+        <form method="post" asp-action="Delete" asp-route-id="@Model.Id" class="inline-form" data-confirm="Delete this message? This can't be undone.">
+            <button type="submit" class="btn btn-danger">Delete</button>
+        </form>
+    </div>
+</article>
