@@ -28,7 +28,10 @@
             @if (p.Layout == "media")
             {
                 <figure class="case-figure browser">
-                    <div class="browser-bar" aria-hidden="true">@p.Image.BrowserUrl</div>
+                    @if (p.Image.BrowserUrl is not null)
+                    {
+                        <div class="browser-bar" aria-hidden="true">@p.Image.BrowserUrl</div>
+                    }
                     <img src="@p.Image.Src" width="@p.Image.Width" height="@p.Image.Height" alt="@p.Image.Alt">
                 </figure>
             }

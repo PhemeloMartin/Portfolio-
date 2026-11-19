@@ -6,7 +6,7 @@
     "kicker": "ICT graduate · Kathu, Northern Cape",
     "lede": "I work across software development, IT support, networking and the cloud, and I keep learning in all of them. I'm completing an Advanced Diploma in ICT at Sol Plaatje University while working as an IT support Lab Intern through the AWRISE ICT Internship Programme.",
     "metaDescription": "Phemelo Martin Mashome is an ICT graduate working across software development, IT support, networking and the cloud. Winner of the MICT SETA National Skills Challenge Hackathon 2026.",
-    "areas": [ "Software development", "IT support", "Networking & security", "Cloud & automation", "Data" ],
+    "areas": [ "Software development", "IT support", "Networking & security", "Cloud & automation", "Data", "IoT & embedded" ],
     "facts": [
       { "label": "Now", "text": "Lab Intern, IT Support at AWRISE" },
       { "label": "Studying", "text": "Advanced Diploma in ICT (NQF 7)" },
@@ -174,6 +174,178 @@
       ]
     },
     {
+      "slug": "post-mine-sentinel",
+      "title": "Post-Mine Sentinel",
+      "subtitle": "Early warning against illegal mining at derelict mines",
+      "year": "2026",
+      "kind": "Independent project",
+      "tags": [ "Prototype" ],
+      "layout": "media",
+      "summary": "An early-warning prototype for South Africa's roughly 6,100 derelict and ownerless mines. Concealed sensors with on-device AI detect people entering a shaft, a self-healing radio mesh carries the alert, and a 3D command centre turns it into a safe, accountable response with court-ready evidence.",
+      "stack": [ "C++", "Go", "Python", "FastAPI", "C#", "ASP.NET Core", "React", "TypeScript", "Three.js", "PostgreSQL", "PostGIS", "TimescaleDB", "Docker", "Kubernetes", "Terraform", "Azure", "GitHub Actions" ],
+      "links": [
+        { "label": "Source code", "url": "https://github.com/PhemeloMartin/post-mine-sentinel" }
+      ],
+      "highlights": [
+        { "title": "On-device AI.", "text": "A 1,393-parameter neural network on an ESP32-S3 tells footsteps, digging, drilling and vehicles apart: 95.4% detection at a 2.2% false-alarm rate on synthetic test data." },
+        { "title": "Own radio mesh.", "text": "SilkNet is a multi-hop LoRa mesh with AES-128-CCM encryption and replay protection. With two gateways, simulated delivery stays at 99.8% when one is jammed." },
+        { "title": "Five languages, one contract.", "text": "C++ firmware, a Go ingest service, a Python API, an ASP.NET Core case service and a React console, kept in agreement by shared test vectors." },
+        { "title": "Production-style delivery.", "text": "Docker, Kubernetes, Terraform for Azure South Africa North, and GitHub Actions with CodeQL, Trivy, SBOMs and signed container images." }
+      ],
+      "image": {
+        "src": "/img/post-mine-sentinel.jpg",
+        "alt": "Post-Mine Sentinel command centre: a 3D map of South Africa with glowing columns marking mines, beside a ranked list of the highest-risk dormant sites.",
+        "width": 1440,
+        "height": 810
+      },
+      "caseStudy": [
+        {
+          "heading": "The problem",
+          "paragraphs": [
+            "South Africa has about 6,100 derelict and ownerless mines. The Auditor-General found that the State rehabilitates about two a year, that none of 2,322 high-risk mines had been rehabilitated, and that the register held duplicate GPS coordinates.",
+            "People die at sites the State already knows about. The Stilfontein standoff ended in January 2025 with 78 bodies and 246 survivors recovered from Buffelsfontein Shaft 11, and in July 2026 two SANDF paratroopers died after falling into an open shaft at the disused CRD Mine. The hard part is not knowing where the shafts are, but knowing which ones are active right now, early enough to act safely."
+          ]
+        },
+        {
+          "heading": "What it does",
+          "bullets": [
+            "Prioritise: an explainable risk index ranks every registered mine by commodity, residual value, access, socio-economic pressure and incident history, backed by free Sentinel-2 satellite change detection.",
+            "Detect: sensors disguised as golden orb-web spiders (the web is the antenna, the legs pick up ground vibration) classify activity on the device itself.",
+            "Communicate: SilkNet, a multi-hop LoRa mesh I designed, carries encrypted alerts from sites with no power or fibre while staying within radio duty-cycle limits.",
+            "Decide: Bayesian fusion turns many noisy sensor votes into one calibrated probability, seismic time-difference-of-arrival locates the source, and every alert is signed with Ed25519.",
+            "Respond: an audited alert lifecycle opens a case with a hash-chained chain of custody and an evidence bundle prepared for South African court rules. The aim is safety, not manhunts."
+          ]
+        },
+        {
+          "heading": "Architecture",
+          "paragraphs": [ "Each part uses the language that suits its job, and the parts talk through well-defined contracts." ],
+          "bullets": [
+            "Firmware in C++17 on an ESP32-S3 with an SX1262 LoRa radio and FreeRTOS: signal processing, a 21-feature extractor and the neural network, with unit tests that run on a PC.",
+            "An ingest service in Go using only the standard library: a hand-written MQTT client, frame authentication, anti-replay windows, retries and a dead-letter queue.",
+            "A core API in Python with FastAPI, SQLAlchemy and Alembic: the mine register, fusion, signed alerts, role-based access, an audit chain and a transactional outbox.",
+            "A case and evidence service in C# on ASP.NET Core 10 with EF Core: a case state machine, chain of custody and evidence bundles, tested with xUnit.",
+            "A 3D command centre in React, TypeScript and Three.js with an orbital map of South Africa's mines, a digital twin of each site, network and governance views.",
+            "PostgreSQL 16 with PostGIS for spatial queries and TimescaleDB for sensor time series, with an immutable audit trigger."
+          ]
+        },
+        {
+          "heading": "Results",
+          "paragraphs": [ "Every number is produced by code in the repository. The models are trained on physics-informed synthetic data, so real-world accuracy will only be known after a field pilot." ],
+          "bullets": [
+            "Edge classifier: macro-F1 0.929 and 95.4% detection at a 2.2% false-alarm rate. On unseen soil it drops to 0.745, which is why the design includes a site-commissioning phase.",
+            "Site digital twin, 480 simulated runs: all 160 intrusions detected with a median of 44–47 seconds, and no false alarms in the 80 quiet runs.",
+            "SilkNet simulation: 99.3–99.9% delivery, about 500 days of battery life, and delivery under jamming raised from 49% to 99.8% by using two gateways.",
+            "Risk model: AUC of 0.80 against reported incidents. The register validator also caught three province-boundary errors, the kind of error the Auditor-General reported."
+          ]
+        },
+        {
+          "heading": "Engineering practice",
+          "bullets": [
+            "Ten architecture decision records explain the main choices, such as LoRa over LoRaWAN and Azure South Africa North for data residency.",
+            "Shared test vectors pin the radio protocol across Python, Go and C++, and the neural network across Python and C++.",
+            "One error contract everywhere: RFC 7807 problem details with trace IDs, retries with back-off, circuit breakers, dead-letter queues, and watchdogs in the firmware.",
+            "Security designed with a STRIDE threat model mapped to ISO 27001 and NIST CSF 2.0, with POPIA and the relevant mining and electronic-evidence laws mapped out."
+          ]
+        },
+        {
+          "heading": "DevOps",
+          "bullets": [
+            "Small, non-root container images, run locally with Docker Compose alongside a field simulator that sends real encrypted radio frames over MQTT.",
+            "Kubernetes manifests with Kustomize, restricted pod security, network policies and autoscaling; Terraform for Azure South Africa North.",
+            "GitHub Actions builds and tests every service, scans with CodeQL, Trivy and gitleaks, and signs release images with cosign, with an SBOM and build provenance.",
+            "Prometheus metrics, Grafana dashboards and alert rules."
+          ]
+        },
+        {
+          "heading": "Status and origin",
+          "paragraphs": [
+            "This is a prototype and a working reference implementation, not a deployed system. Using the radios in the field would need ICASA approval, and commercial monitoring would need PSIRA registration.",
+            "It grew out of ShaftWatch ZA, a hackathon concept my team developed around satellite early warning, risk scoring, inspection planning and post-quantum security. I built Post-Mine Sentinel myself, carrying all four ideas forward as layers of a larger system."
+          ]
+        }
+      ]
+    },
+    {
+      "slug": "route-runner",
+      "title": "Route Runner",
+      "subtitle": "A 3D game I built to learn tech and keep it fresh",
+      "year": "2026",
+      "kind": "Personal project",
+      "tags": [ "Open source" ],
+      "layout": "media",
+      "summary": "A 3D island where each building teaches one area of tech, from CCNA networking to Linux, cloud, Flutter, ASP.NET Core and Kubernetes. I built it to learn the material properly and keep it fresh in my head: lessons lead into quizzes, hands-on labs and spaced-repetition review, and it all runs offline.",
+      "stack": [ "TypeScript", "React", "Three.js", "Fastify", "Zod", "SQLite", "Vitest", "Docker", "Kubernetes", "GitHub Actions" ],
+      "links": [
+        { "label": "Source code", "url": "https://github.com/PhemeloMartin/Route-Runner" }
+      ],
+      "highlights": [
+        { "title": "Learn, then do.", "text": "Every lesson leads into a quiz, a hands-on lab and a chapter boss, so each idea is practised straight after it is learned." },
+        { "title": "Keeps it fresh.", "text": "Spaced-repetition flashcards, daily drills, CCNA-style mock exams, and a daily quest and streak that make revision a habit." },
+        { "title": "Real commands.", "text": "In-browser simulators for Cisco IOS, an Ubuntu shell, docker, kubectl, terraform and dotnet respond like the real tools." },
+        { "title": "Built like production.", "text": "A Fastify API with Zod validation, SQLite with tested migrations, Vitest suites, and Docker and Kubernetes manifests checked in CI." }
+      ],
+      "image": {
+        "src": "/img/route-runner.jpg",
+        "alt": "Route Runner: a 3D island seen from above, with a central plaza ringed by buildings labelled Cloud Tower, App Studio, Supercomputer, Server Room, Data Centre, PC Workshop and Exam Hall.",
+        "width": 1440,
+        "height": 810
+      },
+      "caseStudy": [
+        {
+          "heading": "Why I built it",
+          "paragraphs": [
+            "I wanted one place to learn and practise across the areas I work in, and a way to keep what I learn fresh instead of forgetting it after an exam.",
+            "Route Runner turns that into a daily habit of about an hour: a daily quest always shows what to do next, a streak rewards showing up, and a 13-week study plan works towards the CCNA alongside cloud and DevOps."
+          ]
+        },
+        {
+          "heading": "How it teaches",
+          "bullets": [
+            "Lessons in plain English, each with an analogy, key terms, \"say it like a pro\" lines to read aloud and an interview question to practise answering.",
+            "A quiz after every lesson, then a hands-on lab, then a boss battle at the end of each chapter.",
+            "Spaced-repetition flashcards (the SM-2 algorithm) and endless subnetting, binary, IPv6 and port drills to keep knowledge from fading.",
+            "Mock exams weighted by the CCNA v2.0 blueprint, and XP, ranks and achievements that track progress in each area."
+          ]
+        },
+        {
+          "heading": "What's inside",
+          "bullets": [
+            "Network Academy: 20 chapters and 59 lessons, from how a computer works to OSPF, ACLs, wireless and automation.",
+            "Packet Lab: cable routers, switches and PCs on a 3D bench, then configure them with real Cisco IOS commands across 15 missions, including troubleshooting tickets.",
+            "App Studio and Dev Studio: 13 chapters on C#, Dart, Git, Flutter, ASP.NET Core on .NET 10, EF Core, CI/CD and Kubernetes, with simulated dotnet, flutter, helm and GitHub Actions tools.",
+            "Cloud Tower, Server Room and CloudShell: 12 chapters on Linux, virtualisation, AWS, Docker, Kubernetes and infrastructure as code, with an Ubuntu shell and a 3D cluster view where pods heal when a node fails.",
+            "Data Centre, PC Workshop and Cable Bench: build a server rack, assemble a PC part by part, and crimp RJ45 cables to T568A and T568B."
+          ]
+        },
+        {
+          "heading": "How the simulators work",
+          "paragraphs": [ "The simulators are pure TypeScript and run in the browser, so labs respond instantly and work offline." ],
+          "bullets": [
+            "The network simulator models the decisions real devices make: interface status, VLANs and trunks, longest-prefix routing, OSPF with Dijkstra, DHCP, NAT, ACLs, HSRP and STP. A ping only succeeds if the reply can find its way back.",
+            "The Cisco CLI is a table-driven parser with abbreviations, ? help and the same error messages as real IOS.",
+            "The shell supports quotes, variables, pipes, redirection and scripts over a virtual filesystem with users and permissions, and the cloud tools share one machine, so curl can reach a container you just started."
+          ]
+        },
+        {
+          "heading": "Architecture and data",
+          "bullets": [
+            "A TypeScript monorepo with four packages: the simulation engine, the curriculum, a Fastify API and the React Three Fiber client.",
+            "The curriculum is written as code in a small text format, and tests check that every lesson, question and lab link is complete.",
+            "SQLite through WebAssembly, so nothing needs installing. XP is an append-only ledger, and a partial unique index stops a reward being claimed twice.",
+            "Forward-only migrations, with a test that upgrades an old save and checks no progress is lost, plus atomic writes and daily backups."
+          ]
+        },
+        {
+          "heading": "Testing and delivery",
+          "bullets": [
+            "Vitest suites cover simulator scenarios such as OSPF convergence, DHCP relay, NAT and Kubernetes self-healing, plus API integration and curriculum integrity.",
+            "GitHub Actions type-checks, tests and builds every push, smoke-tests the production server, validates the Kubernetes manifests and publishes a container image.",
+            "A multi-stage, non-root Docker image with health checks, Kubernetes manifests with a network policy, and /healthz, /readyz and Prometheus /metrics endpoints."
+          ]
+        }
+      ]
+    },
+    {
       "slug": "bbt-construction",
       "title": "BBT Construction Management System",
       "year": "2025",
@@ -225,14 +397,14 @@
   ],
 
   "skills": [
-    { "name": "Languages", "items": [ "Python", "C#", "Java", "JavaScript", "SQL", "HTML and CSS" ] },
-    { "name": "Frameworks", "items": [ "ASP.NET", "Django and Django Ninja", "React and Next.js", "SWR", "Bootstrap" ] },
-    { "name": "Databases", "items": [ "PostgreSQL", "MySQL", "SQLite", "Database design" ] },
-    { "name": "Software engineering", "items": [ "Software design and systems analysis", "RESTful APIs", "Twilio API", "Mobile app development", "UI/UX design in Figma", "Project management" ] },
+    { "name": "Languages", "items": [ "Python", "C#", "TypeScript", "JavaScript", "Go", "C++", "Java", "SQL", "HTML and CSS" ] },
+    { "name": "Frameworks", "items": [ "ASP.NET Core and EF Core", "FastAPI", "Django and Django Ninja", "React and Next.js", "Three.js and React Three Fiber", "Fastify", "SWR", "Bootstrap" ] },
+    { "name": "Data and databases", "items": [ "PostgreSQL", "PostGIS and TimescaleDB", "MySQL", "SQLite", "Database design", "Data analysis and visualisation", "Machine learning with scikit-learn", "Big data foundations" ] },
+    { "name": "Software engineering", "items": [ "Software design and systems analysis", "RESTful APIs", "Automated testing (pytest, xUnit, Vitest)", "Twilio API", "Mobile app development", "UI/UX design in Figma", "Project management" ] },
     { "name": "IT support and systems", "items": [ "PC hardware repair", "Software installation and configuration", "Active Directory and Windows domains", "Operating systems and servers", "End-user support" ] },
-    { "name": "Networking and security", "items": [ "TCP/IP and LANs", "Network troubleshooting", "Information security principles" ] },
-    { "name": "Cloud and DevOps", "items": [ "Linux", "Kubernetes", "Containers and cloud native", "Git and GitHub", "Automation and scripting" ] },
-    { "name": "Data", "items": [ "Data analysis and visualisation", "Big data foundations" ] }
+    { "name": "Networking and security", "items": [ "TCP/IP and LANs", "Network troubleshooting", "Information security principles", "Threat modelling (STRIDE)" ] },
+    { "name": "Cloud and DevOps", "items": [ "Linux", "Docker", "Kubernetes", "Terraform", "Microsoft Azure", "GitHub Actions CI/CD", "Prometheus and Grafana", "Git and GitHub", "Automation and scripting" ] },
+    { "name": "IoT and embedded", "items": [ "ESP32 and FreeRTOS", "C++ firmware", "LoRa mesh networking", "MQTT", "Sensor signal processing" ] }
   ],
 
   "education": [
